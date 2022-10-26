@@ -1,7 +1,34 @@
 from django.db import models
 from django.urls import reverse
 
-# Create your models here.
+# Create your models here.pi
+
+
+
+class User(models.Model):
+
+
+    name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255,unique= True)
+    password = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
+    isemailvalid = models.BooleanField(default = False) # for later to verify email
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+
+
+
+
+
+class SignUpToken(models.Model) :
+    # for later 
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.IntegerField()
+
+
+
 
 class Consultant(models.Model):
     
@@ -16,23 +43,21 @@ class Consultant(models.Model):
     '''
     
     #Fields
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email_address = models.EmailField(max_length=100)
     department_name = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True)
-    team_name = models.ForeignKey('Team', on_delete=models.SET_NULL, null=True, default="Unassigned")
+    team = models.ForeignKey('Team', on_delete=models.SET_NULL, null=True, default="Unassigned")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     #Metadata
-    class Meta:
-        ordering = ['last_name', 'first_name']
+    #class Meta:
+       # ordering = ['last_name', 'first_name']
     
     #Methods
-    def get_absolute_url(self):
-        return reverse("model_detail", kwargs={"pk": self.pk})
+    #def get_absolute_url(self):
+        #return reverse("model_detail", kwargs={"pk": self.pk})
     
-    def __str__(self):
-        '''String for Representing the Model Object.'''
-        return f'{self.last_name}, {self.first_name}'
+    #def __str__(self):
+        #'''String for Representing the Model Object.'''
+        #return f'{self.last_name}, {self.first_name}'
     
 
 class Department(models.Model):
@@ -98,9 +123,11 @@ class Project(models.Model):
 class Client(models.Model):
     
     #Fields
-    client_name = models.CharField(max_length=100) 
     client_primary_contact = models.CharField(max_length=100)
     client_number_of_projects = models.IntegerField() #how many projects have we completed with this client
-    
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # 
+
     def __str__(self):
         return self.client_name
+
+
